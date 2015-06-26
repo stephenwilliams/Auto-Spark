@@ -61,7 +61,7 @@ public class SparkAutoConfig {
 	}
 
 	/**
-	 * Runs the scan
+	 * Runs the scan on all classes in the ClassLoader
 	 */
 	public void runFull() {
 		init();
@@ -76,6 +76,7 @@ public class SparkAutoConfig {
 	 * @param searchPackage package to search
 	 */
 	public void run(String searchPackage) {
+		System.out.println("SparkAutoConfig.run");
 		init();
 		Reflections reflections = new Reflections(getConfigurationBuilder().addUrls(ClasspathHelper.forPackage(searchPackage)));
 		run(reflections);
