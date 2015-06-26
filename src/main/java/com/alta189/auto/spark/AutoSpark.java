@@ -2,6 +2,7 @@ package com.alta189.auto.spark;
 
 import com.alta189.auto.spark.reflection.EmptyFileUrlTypes;
 import com.alta189.auto.spark.reflection.EmptyInjector;
+import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
+import spark.RouteImpl;
 import spark.Spark;
 import spark.utils.StringUtils;
 
@@ -28,14 +30,14 @@ import static org.reflections.ReflectionUtils.*;
  * This class uses reflection to find and register methods and classes with
  * Spark
  */
-public class SparkAutoConfig {
-	private static final Logger logger = LoggerFactory.getLogger(SparkAutoConfig.class);
+public class AutoSpark {
+	private static final Logger logger = LoggerFactory.getLogger(AutoSpark.class);
 	private final List<String> excludedPackages = new ArrayList<>();
 	private final List<String> excludedPatterns = new ArrayList<>();
 	private final List<String> excludedFileExtensions = new ArrayList<>();
+	private Method addRoute;
 
-	public SparkAutoConfig() {
-		excludedPackages.add("spark");
+	public AutoSpark() {
 		excludedPackages.add("java");
 		excludedPackages.add("javax");
 		excludedPackages.add("org.sun");
@@ -76,7 +78,7 @@ public class SparkAutoConfig {
 	 * @param searchPackage package to search
 	 */
 	public void run(String searchPackage) {
-		System.out.println("SparkAutoConfig.run");
+		System.out.println("searchPackage = '" + searchPackage + "'");
 		init();
 		Reflections reflections = new Reflections(getConfigurationBuilder().addUrls(ClasspathHelper.forPackage(searchPackage)));
 		run(reflections);
@@ -88,6 +90,8 @@ public class SparkAutoConfig {
 	 * @param reflections see {@link Reflections}
 	 */
 	public void run(Reflections reflections) {
+		addRoute = ReflectionUtils.getAllMethods(Spark.class, withModifier(Modifier.PROTECTED), withName("addRoute")).iterator().next();
+		addRoute.setAccessible(true);
 		registerControllers(reflections);
 		registerFilters(reflections);
 	}
@@ -179,63 +183,30 @@ public class SparkAutoConfig {
 			}
 
 			if (mapping.transformer().equals(DefaultSparkResponseTransformer.class)) {
-				switch (mapping.method()) {
-					case GET:
-						Spark.get(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response));
-						break;
-					case POST:
-						Spark.post(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response));
-						break;
-					case PUT:
-						Spark.put(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response));
-						break;
-					case DELETE:
-						Spark.delete(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response));
-						break;
-					case HEAD:
-						Spark.head(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response));
-						break;
-					case TRACE:
-						Spark.trace(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response));
-						break;
-					case CONNECT:
-						Spark.connect(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response));
-						break;
-					case OPTIONS:
-						Spark.options(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response));
-						break;
+				try {
+					addRoute.invoke(null, mapping.method().name().toLowerCase(), new RouteImpl(path, mapping.accepts()) {
+						@Override
+						public Object handle(Request request, Response response) throws Exception {
+							return method.invoke(instance, request, response);
+						}
+					});
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					e.printStackTrace();
 				}
 			} else {
 				final SparkResponseTransformer transformer = getInstance(mapping.transformer());
 				if (instance == null) {
 					logger.error(controller.getCanonicalName() + ":" + method.getName() + " Error creating instance of the transformer");
 				}
-
-				switch (mapping.method()) {
-					case GET:
-						Spark.get(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response, transformer));
-						break;
-					case POST:
-						Spark.post(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response, transformer));
-						break;
-					case PUT:
-						Spark.put(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response, transformer));
-						break;
-					case DELETE:
-						Spark.delete(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response, transformer));
-						break;
-					case HEAD:
-						Spark.head(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response, transformer));
-						break;
-					case TRACE:
-						Spark.trace(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response, transformer));
-						break;
-					case CONNECT:
-						Spark.connect(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response, transformer));
-						break;
-					case OPTIONS:
-						Spark.options(path, mapping.accepts(), (request, response) -> method.invoke(instance, request, response, transformer));
-						break;
+				try {
+					addRoute.invoke(null, mapping.method().name().toLowerCase(), new RouteImpl(path, mapping.accepts()) {
+						@Override
+						public Object handle(Request request, Response response) throws Exception {
+							return method.invoke(instance, request, response, transformer);
+						}
+					});
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -244,7 +215,7 @@ public class SparkAutoConfig {
 	private void registerExceptionHandler(Class<?> controller) {
 		final Object instance = getInstance(controller);
 
-		Set<Method> methods = getAllMethods(controller, withAnnotation(ExceptionMapping.class), withModifier(Modifier.PUBLIC), withParametersCount(3), withParametersAssignableTo(Throwable.class, Request.class, Response.class));
+		Set<Method> methods = getAllMethods(controller, withAnnotation(ExceptionMapping.class), withModifier(Modifier.PUBLIC), withParametersCount(3));
 		System.out.println("methods = " + methods);
 		if (methods == null || methods.size() == 0) {
 			return;
@@ -253,12 +224,21 @@ public class SparkAutoConfig {
 		for (final Method method : methods) {
 			method.setAccessible(true);
 
+			Class<?>[] parameters = method.getParameterTypes();
+			if (parameters.length != 3 || !Throwable.class.isAssignableFrom(parameters[0]) || !parameters[1].equals(Request.class) || !parameters[2].equals(Response.class)) {
+				logger.error(controller.getCanonicalName() + ":" + method.getName() + " does not have the required parameters");
+				continue;
+			}
+			System.out.println(Throwable.class.isAssignableFrom(parameters[0]));
+			System.out.println("AutoSpark.registerExceptionHandler");
+
 			ExceptionMapping mapping = method.getAnnotation(ExceptionMapping.class);
 			if (mapping == null) {
 				continue;
 			}
 
 			Spark.exception(mapping.value(), (e, request, response) -> {
+				System.out.println("AutoSpark.registerExceptionHandler:LAMBADA");
 				try {
 					method.invoke(instance, e, request, response);
 				} catch (IllegalAccessException | InvocationTargetException e1) {
@@ -283,7 +263,7 @@ public class SparkAutoConfig {
 			return;
 		}
 
-		if (filterMapping.value() == null || StringUtils.isEmpty(filterMapping.value().trim())) {
+		if (filterMapping == null || filterMapping.value() == null || StringUtils.isEmpty(filterMapping.value().trim())) {
 			Spark.before(filter::before);
 			Spark.after(filter::after);
 		} else {
