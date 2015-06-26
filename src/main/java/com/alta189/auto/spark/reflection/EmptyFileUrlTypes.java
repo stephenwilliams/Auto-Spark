@@ -13,6 +13,7 @@ public class EmptyFileUrlTypes implements Vfs.UrlType {
 
 	public EmptyFileUrlTypes() {
 	}
+
 	public EmptyFileUrlTypes(List<String> fileTypes) {
 		fileTypes.forEach(this::addFileType);
 	}

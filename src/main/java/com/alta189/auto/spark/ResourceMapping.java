@@ -9,7 +9,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ResourceMapping {
 	String value();
+
 	RequestMethod method() default RequestMethod.GET;
+
 	String accepts() default "*/*";
+
 	Class<? extends SparkResponseTransformer> transformer() default DefaultSparkResponseTransformer.class;
 }

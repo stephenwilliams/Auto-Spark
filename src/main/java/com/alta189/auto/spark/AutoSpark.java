@@ -24,7 +24,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static org.reflections.ReflectionUtils.*;
+import static org.reflections.ReflectionUtils.getAllMethods;
+import static org.reflections.ReflectionUtils.withAnnotation;
+import static org.reflections.ReflectionUtils.withModifier;
+import static org.reflections.ReflectionUtils.withName;
+import static org.reflections.ReflectionUtils.withParametersCount;
+import static org.reflections.ReflectionUtils.withReturnType;
 
 /**
  * This class uses reflection to find and register methods and classes with
@@ -274,7 +279,7 @@ public class AutoSpark {
 		FilterMapping filterMapping = filterClass.getAnnotation(FilterMapping.class);
 		SparkFilter filter = getInstance(filterClass);
 
-		if (filter == null){
+		if (filter == null) {
 			logger.error(filterClass.getName() + " had trouble getting an instance of the filter");
 			return;
 		}
@@ -288,7 +293,7 @@ public class AutoSpark {
 		}
 	}
 
-	private  <T> T getInstance(Class<? extends T> clazz) {
+	private <T> T getInstance(Class<? extends T> clazz) {
 		T instance = null;
 		try {
 			try {
