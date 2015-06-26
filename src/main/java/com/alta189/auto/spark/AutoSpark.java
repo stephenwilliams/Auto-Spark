@@ -187,7 +187,15 @@ public class AutoSpark {
 					addRoute.invoke(null, mapping.method().name().toLowerCase(), new RouteImpl(path, mapping.accepts()) {
 						@Override
 						public Object handle(Request request, Response response) throws Exception {
-							return method.invoke(instance, request, response);
+							try {
+								return method.invoke(instance, request, response);
+							} catch (IllegalAccessException | InvocationTargetException e) {
+								if (e.getCause() != null) {
+									throw (Exception) e.getCause();
+								} else {
+									throw e;
+								}
+							}
 						}
 					});
 				} catch (IllegalAccessException | InvocationTargetException e) {
@@ -202,7 +210,15 @@ public class AutoSpark {
 					addRoute.invoke(null, mapping.method().name().toLowerCase(), new RouteImpl(path, mapping.accepts()) {
 						@Override
 						public Object handle(Request request, Response response) throws Exception {
-							return method.invoke(instance, request, response, transformer);
+							try {
+								return method.invoke(instance, request, response, transformer);
+							} catch (IllegalAccessException | InvocationTargetException e) {
+								if (e.getCause() != null) {
+									throw (Exception) e.getCause();
+								} else {
+									throw e;
+								}
+							}
 						}
 					});
 				} catch (IllegalAccessException | InvocationTargetException e) {
