@@ -82,7 +82,6 @@ public class AutoSpark {
 	 * @param searchPackage package to search
 	 */
 	public void run(String searchPackage) {
-		System.out.println("searchPackage = '" + searchPackage + "'");
 		init();
 		Reflections reflections = new Reflections(getConfigurationBuilder().addUrls(ClasspathHelper.forPackage(searchPackage)));
 		run(reflections);
@@ -94,7 +93,7 @@ public class AutoSpark {
 	 * @param reflections see {@link Reflections}
 	 */
 	public void run(Reflections reflections) {
-		addRoute = ReflectionUtils.getAllMethods(Spark.class, withModifier(Modifier.PROTECTED), withName("addRoute")).iterator().next();
+		addRoute = getAllMethods(Spark.class, withModifier(Modifier.PROTECTED), withName("addRoute")).iterator().next();
 		addRoute.setAccessible(true);
 		registerControllers(reflections);
 		registerFilters(reflections);
@@ -249,7 +248,6 @@ public class AutoSpark {
 		final Object instance = AutoSparkUtils.getObjectInstance(controller);
 
 		Set<Method> methods = getAllMethods(controller, withAnnotation(ExceptionMapping.class), withModifier(Modifier.PUBLIC), withParametersCount(3));
-		System.out.println("methods = " + methods);
 		if (methods == null || methods.size() == 0) {
 			return;
 		}
@@ -262,8 +260,6 @@ public class AutoSpark {
 				logger.error(controller.getCanonicalName() + ":" + method.getName() + " does not have the required parameters");
 				continue;
 			}
-			System.out.println(Throwable.class.isAssignableFrom(parameters[0]));
-			System.out.println("AutoSpark.registerExceptionHandler");
 
 			ExceptionMapping mapping = method.getAnnotation(ExceptionMapping.class);
 			if (mapping == null) {
@@ -271,7 +267,6 @@ public class AutoSpark {
 			}
 
 			Spark.exception(mapping.value(), (e, request, response) -> {
-				System.out.println("AutoSpark.registerExceptionHandler:LAMBADA");
 				try {
 					method.invoke(instance, e, request, response);
 				} catch (IllegalAccessException | InvocationTargetException e1) {

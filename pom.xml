@@ -5,13 +5,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>Auto Spark</name>
-    <description>Auto Spark adds an alternative way to Spark</description>
+    <description>Auto Spark adds an alternative way to use Spark</description>
     <inceptionYear>2015</inceptionYear>
 
     <groupId>com.alta189</groupId>
     <artifactId>auto-spark</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
+    <url>http://github.com/alta189/Auto-Spark</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <!-- Developers -->
     <developers>
