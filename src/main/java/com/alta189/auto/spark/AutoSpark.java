@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
+import spark.ResponseTransformerRouteImpl;
 import spark.RouteImpl;
 import spark.Spark;
 import spark.utils.StringUtils;
@@ -194,7 +195,11 @@ public class AutoSpark {
 								return method.invoke(instance, request, response);
 							} catch (IllegalAccessException | InvocationTargetException e) {
 								if (e.getCause() != null) {
-									throw (Exception) e.getCause();
+									Exception ex = AutoSparkUtils.safeCast(e.getCause(), Exception.class);
+									if (ex == null) {
+										ex = new WrappedThrowable(e.getCause());
+									}
+									throw ex;
 								} else {
 									throw e;
 								}
@@ -210,20 +215,29 @@ public class AutoSpark {
 					logger.error(controller.getCanonicalName() + ":" + method.getName() + " Error creating instance of the transformer");
 				}
 				try {
-					addRoute.invoke(null, mapping.method().name().toLowerCase(), new RouteImpl(path, mapping.accepts()) {
-						@Override
-						public Object handle(Request request, Response response) throws Exception {
-							try {
-								return method.invoke(instance, request, response, transformer);
-							} catch (IllegalAccessException | InvocationTargetException e) {
-								if (e.getCause() != null) {
-									throw (Exception) e.getCause();
-								} else {
-									throw e;
+					addRoute.invoke(null, mapping.method().name().toLowerCase(), ResponseTransformerRouteImpl.create(
+							path,
+							mapping.accepts(),
+							new RouteImpl(path, mapping.accepts()) {
+								@Override
+								public Object handle(Request request, Response response) throws Exception {
+									try {
+										return method.invoke(instance, request, response);
+									} catch (IllegalAccessException | InvocationTargetException e) {
+										if (e.getCause() != null) {
+											Exception ex = AutoSparkUtils.safeCast(e.getCause(), Exception.class);
+											if (ex == null) {
+												ex = new WrappedThrowable(e.getCause());
+											}
+											throw ex;
+										} else {
+											throw e;
+										}
+									}
 								}
-							}
-						}
-					});
+							},
+							transformer
+					));
 				} catch (IllegalAccessException | InvocationTargetException e) {
 					e.printStackTrace();
 				}
