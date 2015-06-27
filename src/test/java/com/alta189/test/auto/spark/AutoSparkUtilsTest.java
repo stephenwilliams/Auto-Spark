@@ -5,8 +5,8 @@ import com.alta189.test.auto.spark.utils.ClassWithGetInstance;
 import com.alta189.test.auto.spark.utils.ClassWithInstance;
 import com.alta189.test.auto.spark.utils.ImpossibleClass;
 import com.alta189.test.auto.spark.utils.PlainClass;
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 
 public class AutoSparkUtilsTest {
 	@Test

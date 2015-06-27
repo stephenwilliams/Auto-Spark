@@ -1,7 +1,6 @@
 package com.alta189.auto.spark;
 
 import com.alta189.auto.spark.reflection.EmptyFileUrlTypes;
-import com.alta189.auto.spark.reflection.EmptyInjector;
 import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
@@ -29,7 +28,6 @@ import static org.reflections.ReflectionUtils.withAnnotation;
 import static org.reflections.ReflectionUtils.withModifier;
 import static org.reflections.ReflectionUtils.withName;
 import static org.reflections.ReflectionUtils.withParametersCount;
-import static org.reflections.ReflectionUtils.withReturnType;
 
 /**
  * This class uses reflection to find and register methods and classes with
