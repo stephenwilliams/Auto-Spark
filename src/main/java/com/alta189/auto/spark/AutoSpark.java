@@ -158,7 +158,7 @@ public class AutoSpark {
 
 	private void registerController(Class<?> controller) {
 		ResourceMapping parentResourceMapping = controller.getAnnotation(ResourceMapping.class);
-		final Object instance = getInstance(controller);
+		final Object instance = AutoSparkUtils.getObjectInstance(controller);
 
 		Set<Method> methods = getAllMethods(controller, withAnnotation(ResourceMapping.class), withModifier(Modifier.PUBLIC));
 		if (methods == null || methods.size() == 0) {
@@ -207,7 +207,7 @@ public class AutoSpark {
 					e.printStackTrace();
 				}
 			} else {
-				final SparkResponseTransformer transformer = getInstance(mapping.transformer());
+				final SparkResponseTransformer transformer = AutoSparkUtils.getObjectInstance(mapping.transformer());
 				if (instance == null) {
 					logger.error(controller.getCanonicalName() + ":" + method.getName() + " Error creating instance of the transformer");
 				}
@@ -234,7 +234,7 @@ public class AutoSpark {
 	}
 
 	private void registerExceptionHandler(Class<?> controller) {
-		final Object instance = getInstance(controller);
+		final Object instance = AutoSparkUtils.getObjectInstance(controller);
 
 		Set<Method> methods = getAllMethods(controller, withAnnotation(ExceptionMapping.class), withModifier(Modifier.PUBLIC), withParametersCount(3));
 		System.out.println("methods = " + methods);
@@ -277,7 +277,7 @@ public class AutoSpark {
 
 	private void registerFilter(Class<? extends SparkFilter> filterClass) {
 		FilterMapping filterMapping = filterClass.getAnnotation(FilterMapping.class);
-		SparkFilter filter = getInstance(filterClass);
+		SparkFilter filter = AutoSparkUtils.getObjectInstance(filterClass);
 
 		if (filter == null) {
 			logger.error(filterClass.getName() + " had trouble getting an instance of the filter");
@@ -291,31 +291,5 @@ public class AutoSpark {
 			Spark.before(filterMapping.value(), filter::before);
 			Spark.after(filterMapping.value(), filter::after);
 		}
-	}
-
-	private <T> T getInstance(Class<? extends T> clazz) {
-		T instance = null;
-		try {
-			try {
-				Set<Method> methods = getAllMethods(clazz,
-						withModifier(Modifier.PUBLIC),
-						withModifier(Modifier.STATIC),
-						withReturnType(clazz),
-						withName("getInstance"),
-						withParametersCount(0));
-				if (methods != null && methods.size() == 1) {
-					instance = (T) methods.iterator().next().invoke(null);
-				}
-			} catch (Exception ignored) {
-			}
-
-			if (instance == null) {
-				instance = (T) EmptyInjector.getInstance().newInstance(clazz);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		return instance;
 	}
 }
