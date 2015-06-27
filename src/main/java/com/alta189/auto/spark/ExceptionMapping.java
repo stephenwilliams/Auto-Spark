@@ -15,5 +15,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExceptionMapping {
+	/**
+	 * Exception that this mapping handles
+	 *
+	 * @return exception's class
+	 */
 	Class<? extends Exception> value();
 }

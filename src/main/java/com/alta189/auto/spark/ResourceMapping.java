@@ -21,23 +21,31 @@ import java.lang.annotation.Target;
 public @interface ResourceMapping {
 	/**
 	 * Path for the Route
+	 *
+	 * @return path
 	 */
 	String value();
 
 	/**
-	 * Method for the Route. <br />
+	 * Method for the Route.
 	 *
 	 * Default is GET
+	 *
+	 * @return method
 	 */
 	RequestMethod method() default RequestMethod.GET;
 
 	/**
 	 * The accept type
+	 *
+	 * @return accept type
 	 */
 	String accepts() default "*/*";
 
 	/**
 	 * The transformer for the route
+	 *
+	 * @return transformer class
 	 */
 	Class<? extends SparkResponseTransformer> transformer() default DefaultSparkResponseTransformer.class;
 }

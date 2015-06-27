@@ -13,6 +13,8 @@ import java.lang.annotation.Target;
 public @interface FilterMapping {
 	/**
 	 * The path to apply the {@link SparkFilter} to
+	 *
+	 * @return path
 	 */
 	String value();
 }
