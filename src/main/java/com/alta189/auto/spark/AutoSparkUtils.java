@@ -74,4 +74,41 @@ public class AutoSparkUtils {
 		}
 		return null;
 	}
+
+	public static String getFullMethodName(Method method) {
+		return new StringBuilder().append(getSimpleClassName(method.getDeclaringClass())).append(".").append(method.getName()).append("()").toString();
+	}
+
+	public static String getSimpleClassName(Class<?> clazz) {
+		return new StringBuilder().append(getSimplePackage(clazz.getPackage())).append(".").append(clazz.getSimpleName()).toString();
+	}
+
+	private static String getSimplePackage(Package p) {
+		String[] arr = p.getName().split("\\.");
+		if (arr.length == 0) {
+			return null;
+		}
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < arr.length; i++) {
+			builder.append(arr[i].substring(0, 1));
+			if (i != arr.length - 1) {
+				builder.append(".");
+			}
+		}
+		return builder.toString();
+	}
+
+	public static boolean isIgnoreParent(Transformer transformerMapping) {
+		if (transformerMapping == null) {
+			return false;
+		}
+		return transformerMapping.ignoreParent();
+	}
+
+	public static boolean isIgnoreParent(TemplateEngine templateEngineMapping) {
+		if (templateEngineMapping == null) {
+			return false;
+		}
+		return templateEngineMapping.ignoreParent();
+	}
 }

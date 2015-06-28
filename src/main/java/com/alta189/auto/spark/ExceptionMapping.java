@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Denotes a method to handle an {@link Exception}. Class containing this must have
  * the {@link Controller} annotation
- *
+ * <p>
  * The method must return an object and have {@link spark.Request}
  * and {@link spark.Response} as its parameters.
  */

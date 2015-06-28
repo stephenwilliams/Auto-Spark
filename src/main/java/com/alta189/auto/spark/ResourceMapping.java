@@ -8,11 +8,11 @@ import java.lang.annotation.Target;
 /**
  * Can be placed on a Method or Class. Class containing this must have
  * the {@link Controller} annotation
- *
+ * <p>
  * When placed on a method it denotes a route for Spark. The method must
  * return an object and have {@link spark.Request} and {@link spark.Response} as
  * its parameters
- *
+ * <p>
  * When placed on a class it's value is used as the prefix for the value of
  * all methods marked with {@link ResourceMapping}
  */
@@ -28,7 +28,7 @@ public @interface ResourceMapping {
 
 	/**
 	 * Method for the Route.
-	 *
+	 * <p>
 	 * Default is GET
 	 *
 	 * @return method
@@ -41,19 +41,4 @@ public @interface ResourceMapping {
 	 * @return accept type
 	 */
 	String accepts() default "*/*";
-
-	/**
-	 * The transformer for the route
-	 *
-	 * @return transformer class
-	 */
-	Class<? extends SparkResponseTransformer> transformer() default DefaultSparkResponseTransformer.class;
-
-	/**
-	 * Denotes if the parent class's transformer should be ignored. If true,
-	 * the parent's transformer will not be used for this mapping
-	 *
-	 * @return flag to ignore parent transformer
-	 */
-	boolean ignoreParentTransformer() default false;
 }
