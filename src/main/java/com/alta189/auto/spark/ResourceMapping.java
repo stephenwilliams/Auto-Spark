@@ -48,4 +48,12 @@ public @interface ResourceMapping {
 	 * @return transformer class
 	 */
 	Class<? extends SparkResponseTransformer> transformer() default DefaultSparkResponseTransformer.class;
+
+	/**
+	 * Denotes if the parent class's transformer should be ignored. If true,
+	 * the parent's transformer will not be used for this mapping
+	 *
+	 * @return flag to ignore parent transformer
+	 */
+	boolean ignoreParentTransformer() default false;
 }

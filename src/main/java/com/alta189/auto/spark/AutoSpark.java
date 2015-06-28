@@ -157,6 +157,10 @@ public class AutoSpark {
 	private void registerController(Class<?> controller) {
 		ResourceMapping parentResourceMapping = controller.getAnnotation(ResourceMapping.class);
 		final Object instance = AutoSparkUtils.getObjectInstance(controller);
+		SparkResponseTransformer parentTransformer = null;
+		if (parentResourceMapping != null && parentResourceMapping.transformer() != null && !parentResourceMapping.transformer().equals(DefaultSparkResponseTransformer.class)) {
+			parentTransformer = AutoSparkUtils.getObjectInstance(parentResourceMapping.transformer());
+		}
 
 		Set<Method> methods = getAllMethods(controller, withAnnotation(ResourceMapping.class), withModifier(Modifier.PUBLIC));
 		if (methods == null || methods.size() == 0) {
@@ -185,7 +189,17 @@ public class AutoSpark {
 				path = parentResourceMapping.value() + path;
 			}
 
-			if (mapping.transformer().equals(DefaultSparkResponseTransformer.class)) {
+			SparkResponseTransformer transformer = null;
+			if (!mapping.transformer().equals(DefaultSparkResponseTransformer.class)) {
+				transformer = AutoSparkUtils.getObjectInstance(mapping.transformer());
+				if (transformer == null) {
+					logger.error(controller.getCanonicalName() + ":" + method.getName() + " Error creating instance of the transformer");
+				}
+			} else if (!mapping.ignoreParentTransformer()) {
+				transformer = parentTransformer;
+			}
+
+			if (transformer == null) {
 				try {
 					addRoute.invoke(null, mapping.method().name().toLowerCase(), new RouteImpl(path, mapping.accepts()) {
 						@Override
@@ -209,10 +223,6 @@ public class AutoSpark {
 					e.printStackTrace();
 				}
 			} else {
-				final SparkResponseTransformer transformer = AutoSparkUtils.getObjectInstance(mapping.transformer());
-				if (instance == null) {
-					logger.error(controller.getCanonicalName() + ":" + method.getName() + " Error creating instance of the transformer");
-				}
 				try {
 					addRoute.invoke(null, mapping.method().name().toLowerCase(), ResponseTransformerRouteImpl.create(
 							path,

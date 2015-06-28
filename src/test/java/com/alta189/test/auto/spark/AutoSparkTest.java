@@ -45,6 +45,20 @@ public class AutoSparkTest {
 	}
 
 	@Test
+	public void testParentTransformer() throws Exception {
+		Response response = client.newCall(new Request.Builder().url(AutoSparkTestingConstants.HOST + "/parent/transformer").build()).execute();
+		Assert.assertNotNull(response);
+		Assert.assertEquals(AutoSparkTestingConstants.EXPECTED_TRANSFORMER, response.body().string());
+	}
+
+	@Test
+	public void testParentTransformerIgnored() throws Exception {
+		Response response = client.newCall(new Request.Builder().url(AutoSparkTestingConstants.HOST + "/parent/transformer/ignore").build()).execute();
+		Assert.assertNotNull(response);
+		Assert.assertEquals(AutoSparkTestingConstants.SUCCESS, response.body().string());
+	}
+
+	@Test
 	public void testFilter() throws Exception {
 		Response response = client.newCall(new Request.Builder().url(AutoSparkTestingConstants.HOST + "/filter").build()).execute();
 		Assert.assertNotNull(response);
