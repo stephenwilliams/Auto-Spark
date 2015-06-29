@@ -36,6 +36,7 @@ public class AutoSpark {
 	private final List<String> excludedPatterns = new ArrayList<>();
 	private final List<String> excludedFileExtensions = new ArrayList<>();
 	private final List<AutoController> registeredControllers = new ArrayList<>();
+	private final List<String> registeredFilters = new ArrayList<>();
 	protected Method addRoute;
 
 	public AutoSpark() {
@@ -95,6 +96,7 @@ public class AutoSpark {
 		registerControllers(reflections);
 		registerFilters(reflections);
 		registerWrappedRuntimeExceptionCatch();
+		printRegistrations();
 	}
 
 	/**
@@ -176,13 +178,16 @@ public class AutoSpark {
 			return;
 		}
 
+		StringBuilder builder = new StringBuilder("[FILTER MAPPING] ").append(AutoSparkUtils.getSimpleClassName(filterClass));
 		if (filterMapping == null || filterMapping.value() == null || StringUtils.isEmpty(filterMapping.value().trim())) {
 			Spark.before(filter::before);
 			Spark.after(filter::after);
 		} else {
 			Spark.before(filterMapping.value(), filter::before);
 			Spark.after(filterMapping.value(), filter::after);
+			builder.append("path: ").append(filterMapping.value());
 		}
+		registeredFilters.add(builder.toString());
 	}
 
 	private void registerWrappedRuntimeExceptionCatch() {
@@ -206,7 +211,16 @@ public class AutoSpark {
 		handler.handle(exception, request, response);
 	}
 
+	public void printRegistrations() {
+		registeredControllers.forEach(AutoController::print);
+		registeredFilters.forEach(logger::info);
+	}
+
 	protected Method getAddRoute() {
 		return addRoute;
+	}
+
+	public static Logger getLogger() {
+		return logger;
 	}
 }

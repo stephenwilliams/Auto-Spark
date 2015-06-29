@@ -20,6 +20,7 @@ class ResourceRegistration extends Registration {
 	private SparkResponseTransformer transformer = null;
 	private spark.TemplateEngine templateEngine = null;
 	private String path;
+	private RegistrationType registrationType;
 
 	public ResourceRegistration(AutoController parent, Method method) {
 		super(parent, method);
@@ -120,6 +121,7 @@ class ResourceRegistration extends Registration {
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new RegistrationException(getMethod(), "Exception when registering route", e);
 		}
+		registrationType = RegistrationType.PLAIN;
 	}
 
 	private void transformerRegister() throws RegistrationException {
@@ -150,6 +152,7 @@ class ResourceRegistration extends Registration {
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
+		registrationType = RegistrationType.TRANSFORMER;
 	}
 
 	private void templateEngineRegister() throws RegistrationException {
@@ -173,6 +176,34 @@ class ResourceRegistration extends Registration {
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
+		registrationType = RegistrationType.TEMPLATE_ENGINE;
+	}
+
+	@Override
+	public void print() {
+		StringBuilder builder = new StringBuilder("[RESOURCE MAPPING] ")
+				.append(AutoSparkUtils.getFullMethodName(getMethod()))
+				.append(" ")
+				.append(getResourceMapping().method().name())
+				.append(" ")
+				.append(getPath())
+				.append(" accepts: ")
+				.append(getResourceMapping().accepts())
+				.append(" ");
+
+		switch (registrationType) {
+			case TRANSFORMER:
+				builder.append(" transformer: ")
+						.append(AutoSparkUtils.getSimpleClassName(transformer.getClass()));
+				break;
+			case TEMPLATE_ENGINE:
+				builder.append(" template engine: ")
+						.append(AutoSparkUtils.getSimpleClassName(templateEngine.getClass()));
+				break;
+			case PLAIN:
+			default:
+		}
+		AutoSpark.getLogger().info(builder.toString());
 	}
 
 	public ResourceMapping getResourceMapping() {
@@ -197,5 +228,11 @@ class ResourceRegistration extends Registration {
 
 	public String getPath() {
 		return path;
+	}
+
+	private enum RegistrationType {
+		PLAIN,
+		TRANSFORMER,
+		TEMPLATE_ENGINE
 	}
 }

@@ -15,6 +15,8 @@ abstract class Registration {
 
 	public abstract void register() throws RegistrationException;
 
+	public abstract void print();
+
 	public AutoController getParent() {
 		return parent;
 	}

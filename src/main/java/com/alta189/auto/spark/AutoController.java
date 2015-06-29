@@ -89,6 +89,10 @@ class AutoController {
 		}
 	}
 
+	public void print() {
+		registrations.forEach(Registration::print);
+	}
+
 	public List<Registration> getRegistrations() {
 		return registrations;
 	}

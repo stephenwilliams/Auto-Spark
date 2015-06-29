@@ -51,6 +51,15 @@ class ExceptionRegistration extends Registration {
 		});
 	}
 
+	@Override
+	public void print() {
+		StringBuilder builder = new StringBuilder("[EXCEPTION MAPPING] ")
+				.append(AutoSparkUtils.getFullMethodName(getMethod()))
+				.append(" for exception: ")
+				.append(AutoSparkUtils.getSimpleClassName(getExceptionMapping().value()));
+		AutoSpark.getLogger().info(builder.toString());
+	}
+
 	public ExceptionMapping getExceptionMapping() {
 		return exceptionMapping;
 	}
