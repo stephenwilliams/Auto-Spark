@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Auto Spark by alta189</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Auto Spark</h1>
+        <h2>Alternative way to use Spark</h2>
+        <a href="https://github.com/alta189/Auto-Spark" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h2>
+<a id="auto-spark" class="anchor" href="#auto-spark" aria-hidden="true"><span class="octicon octicon-link"></span></a>Auto Spark</h2>
+
+<p>Auto Spark is an alternative way to use <a href="http://sparkjava.com">Spark</a>. This example assumes you have a basic understanding of how to use Spark.</p>
+
+<h3>
+<a id="downloads" class="anchor" href="#downloads" aria-hidden="true"><span class="octicon octicon-link"></span></a>Downloads</h3>
+
+<p><strong>Maven</strong></p>
+
+<div class="highlight highlight-xml"><pre>&lt;<span class="pl-ent">dependency</span>&gt;
+    &lt;<span class="pl-ent">groupId</span>&gt;com.alta189&lt;/<span class="pl-ent">groupId</span>&gt;
+    &lt;<span class="pl-ent">artifactId</span>&gt;auto-spark&lt;/<span class="pl-ent">artifactId</span>&gt;
+    &lt;<span class="pl-ent">version</span>&gt;1.0&lt;/<span class="pl-ent">version</span>&gt;
+&lt;/<span class="pl-ent">dependency</span>&gt;</pre></div>
+
+<p><strong>Gradle</strong></p>
+
+<div class="highlight highlight-gradle"><pre><span class="pl-s"><span class="pl-pds">'</span>com.alta189:auto-spark:1.0<span class="pl-pds">'</span></span></pre></div>
+
+<p>You can also download the jars <a href="https://github.com/alta189/Auto-Spark/releases">here</a>.</p>
+
+<h3>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting Started</h3>
+
+<p>ExampleServer.java</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.AutoSpark</span>;
+
+<span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">ExampleServer</span> {
+    <span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-k">void</span> <span class="pl-en">main</span>(<span class="pl-k">String</span>[] <span class="pl-v">args</span>) {
+        <span class="pl-k">new</span> <span class="pl-smi">AutoSpark</span>()<span class="pl-k">.</span>run();
+    }
+}</pre></div>
+
+<p>HelloWorld.java</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.Controller</span>;
+<span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.ResourceMapping</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.Request</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.Response</span>;
+
+@<span class="pl-smi">Controller</span>
+<span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">HelloWorld</span> {
+    <span class="pl-k">@ResourceMapping</span>(<span class="pl-s"><span class="pl-pds">"</span>/hello<span class="pl-pds">"</span></span>)
+    <span class="pl-k">public</span> <span class="pl-smi">String</span> <span class="pl-en">hello</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>Hello, World!<span class="pl-pds">"</span></span>;
+    }
+}</pre></div>
+
+<p>View at: http://localhost:4567/hello</p>
+
+<h3>
+<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Examples</h3>
+
+<p>ExampleController.java</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.Controller</span>;
+<span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.RequestMethod</span>;
+<span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.ResourceMapping</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.Request</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.Response</span>;
+
+@<span class="pl-smi">Controller</span>
+<span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">ExampleController</span> {
+    <span class="pl-k">@ResourceMapping</span>(<span class="pl-c1">value</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>/users/add<span class="pl-pds">"</span></span>, <span class="pl-c1">method</span> <span class="pl-k">=</span> <span class="pl-smi">RequestMethod</span><span class="pl-c1"><span class="pl-k">.</span>PUT</span>)
+    <span class="pl-k">public</span> <span class="pl-smi">String</span> <span class="pl-en">addUser</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        <span class="pl-c">// Internal Logic</span>
+    }
+
+    <span class="pl-k">@ResourceMapping</span>(<span class="pl-c1">value</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>/users/update<span class="pl-pds">"</span></span>, <span class="pl-c1">method</span> <span class="pl-k">=</span> <span class="pl-smi">RequestMethod</span><span class="pl-c1"><span class="pl-k">.</span>POST</span>)
+    <span class="pl-k">public</span> <span class="pl-smi">String</span> <span class="pl-en">updateUser</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        <span class="pl-c">// Internal Logic</span>
+    }
+
+    <span class="pl-k">@ResourceMapping</span>(<span class="pl-c1">value</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>/users/delete<span class="pl-pds">"</span></span>, <span class="pl-c1">method</span> <span class="pl-k">=</span> <span class="pl-smi">RequestMethod</span><span class="pl-c1"><span class="pl-k">.</span>DELETE</span>)
+    <span class="pl-k">public</span> <span class="pl-smi">String</span> <span class="pl-en">deleteUser</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        <span class="pl-c">// Internal Logic</span>
+    }
+
+    <span class="pl-k">@ResourceMapping</span>(<span class="pl-c1">value</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>/users/list<span class="pl-pds">"</span></span>, <span class="pl-c1">method</span> <span class="pl-k">=</span> <span class="pl-smi">RequestMethod</span><span class="pl-c1"><span class="pl-k">.</span>GET</span>)
+    <span class="pl-k">public</span> <span class="pl-smi">String</span> <span class="pl-en">listUsers</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        <span class="pl-c">// Internal Logic</span>
+    }
+}</pre></div>
+
+<p>You could also simplify each methods <code>@ResourceMapping</code> by removing the <code>/users</code> from each and adding <code>@ResourceMapping("/users")</code> to the class.</p>
+
+<hr>
+
+<p>Result.java</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.AutoSparkUtils</span>;
+<span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.SparkResponseTransformer</span>;
+
+<span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">Result</span> {
+    <span class="pl-k">private</span> <span class="pl-k">final</span> <span class="pl-smi">String</span> result;
+
+    <span class="pl-k">public</span> <span class="pl-en">Result</span>(<span class="pl-smi">String</span> <span class="pl-v">result</span>) {
+        <span class="pl-v">this</span><span class="pl-k">.</span>result <span class="pl-k">=</span> result;
+    }
+
+    <span class="pl-k">public</span> <span class="pl-smi">String</span> <span class="pl-en">getResult</span>() {
+        <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>{ <span class="pl-cce">\"</span>result<span class="pl-cce">\"</span> : <span class="pl-cce">\"</span><span class="pl-pds">"</span></span> <span class="pl-k">+</span> result <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-cce">\"</span> }<span class="pl-pds">"</span></span>;
+    }
+
+    <span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-k">class</span> <span class="pl-en">ResultTransformer</span> <span class="pl-k">extends</span> <span class="pl-e">SparkResponseTransformer</span> {
+        <span class="pl-k">@Override</span>
+        <span class="pl-k">public</span> <span class="pl-smi">String</span> <span class="pl-en">render</span>(<span class="pl-smi">Object</span> <span class="pl-v">model</span>) <span class="pl-k">throws</span> <span class="pl-smi">Exception</span> {
+            <span class="pl-smi">Result</span> result <span class="pl-k">=</span> <span class="pl-smi">AutoSparkUtils</span><span class="pl-k">.</span>safeCast(model);
+            <span class="pl-k">if</span> (result <span class="pl-k">==</span> <span class="pl-c1">null</span>) {
+                <span class="pl-k">throw</span> <span class="pl-k">new</span> <span class="pl-smi">IllegalAccessException</span>(<span class="pl-s"><span class="pl-pds">"</span>result null<span class="pl-pds">"</span></span>);
+            }
+            <span class="pl-k">return</span> result<span class="pl-k">.</span>getResult();
+        }
+    }
+}</pre></div>
+
+<p>TransformerExample.java</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.Controller</span>;
+<span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.ResourceMapping</span>;
+<span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.Transformer</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.Request</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.Response</span>;
+
+@<span class="pl-smi">Controller</span>
+<span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TransformerExample</span> {
+    <span class="pl-k">@Transformer</span>(<span class="pl-smi">Result</span><span class="pl-k">.</span><span class="pl-smi">ResultTransformer</span><span class="pl-k">.</span>class)
+    <span class="pl-k">@ResourceMapping</span>(<span class="pl-s"><span class="pl-pds">"</span>/status<span class="pl-pds">"</span></span>)
+    <span class="pl-k">public</span> <span class="pl-smi">Result</span> <span class="pl-en">status</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-smi">Result</span>(<span class="pl-s"><span class="pl-pds">"</span>online<span class="pl-pds">"</span></span>);
+    }
+
+    <span class="pl-k">@Transformer</span>(<span class="pl-smi">Result</span><span class="pl-k">.</span><span class="pl-smi">ResultTransformer</span><span class="pl-k">.</span>class)
+    <span class="pl-k">@ResourceMapping</span>(<span class="pl-s"><span class="pl-pds">"</span>/health<span class="pl-pds">"</span></span>)
+    <span class="pl-k">public</span> <span class="pl-smi">Result</span> <span class="pl-en">health</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-smi">Result</span>(<span class="pl-s"><span class="pl-pds">"</span>good<span class="pl-pds">"</span></span>);
+    }
+
+    <span class="pl-k">@ResourceMapping</span>(<span class="pl-s"><span class="pl-pds">"</span>/hello<span class="pl-pds">"</span></span>)
+    <span class="pl-k">public</span> <span class="pl-smi">String</span> <span class="pl-en">hello</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>Hello, World!<span class="pl-pds">"</span></span>;
+    }
+}
+</pre></div>
+
+<p>You can simplify this class by declaring the Transformer to be for the entire class and setting the <code>/hello</code> resource to ignore the parent transformer as seen below</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.Controller</span>;
+<span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.ResourceMapping</span>;
+<span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.Transformer</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.Request</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.Response</span>;
+
+@<span class="pl-smi">Controller</span>
+@Transformer(<span class="pl-smi">Result</span><span class="pl-k">.</span><span class="pl-smi">ResultTransformer</span><span class="pl-k">.</span>class)
+<span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TransformerExample</span> {
+    <span class="pl-k">@ResourceMapping</span>(<span class="pl-s"><span class="pl-pds">"</span>/status<span class="pl-pds">"</span></span>)
+    <span class="pl-k">public</span> <span class="pl-smi">Result</span> <span class="pl-en">status</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-smi">Result</span>(<span class="pl-s"><span class="pl-pds">"</span>online<span class="pl-pds">"</span></span>);
+    }
+
+    <span class="pl-k">@ResourceMapping</span>(<span class="pl-s"><span class="pl-pds">"</span>/health<span class="pl-pds">"</span></span>)
+    <span class="pl-k">public</span> <span class="pl-smi">Result</span> <span class="pl-en">health</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-smi">Result</span>(<span class="pl-s"><span class="pl-pds">"</span>good<span class="pl-pds">"</span></span>);
+    }
+
+    <span class="pl-k">@Transformer</span>(<span class="pl-c1">ignoreParent</span> <span class="pl-k">=</span> <span class="pl-c1">true</span>)
+    <span class="pl-k">@ResourceMapping</span>(<span class="pl-s"><span class="pl-pds">"</span>/hello<span class="pl-pds">"</span></span>)
+    <span class="pl-k">public</span> <span class="pl-smi">String</span> <span class="pl-en">hello</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>Hello, World!<span class="pl-pds">"</span></span>;
+    }
+}</pre></div>
+
+<hr>
+
+<p>hello.ftl</p>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">h1</span>&gt;Hello, ${message}!&lt;/<span class="pl-ent">h1</span>&gt;</pre></div>
+
+<p>TemplateEngineExample.java</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.ResourceMapping</span>;
+<span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.TemplateEngine</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.ModelAndView</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.Request</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.Response</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.utils.StringUtils</span>;
+
+<span class="pl-k">import</span> <span class="pl-smi">java.util.HashMap</span>;
+<span class="pl-k">import</span> <span class="pl-smi">java.util.Map</span>;
+
+<span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TemplateEngineExample</span> {
+    <span class="pl-k">@ResourceMapping</span>(<span class="pl-s"><span class="pl-pds">"</span>/hello/:message<span class="pl-pds">"</span></span>)
+    <span class="pl-k">@TemplateEngine</span>(<span class="pl-smi">FreeMarkerEngine</span><span class="pl-k">.</span>class)
+    <span class="pl-k">public</span> <span class="pl-smi">ModelAndView</span> <span class="pl-en">template</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        <span class="pl-k">Map&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Object</span>&gt;</span> attributes <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-k">HashMap&lt;&gt;</span>();
+        <span class="pl-smi">String</span> message <span class="pl-k">=</span> request<span class="pl-k">.</span>params(<span class="pl-s"><span class="pl-pds">"</span>message<span class="pl-pds">"</span></span>);
+        <span class="pl-k">if</span> (<span class="pl-smi">StringUtils</span><span class="pl-k">.</span>isEmpty(message)) {
+            message <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>World<span class="pl-pds">"</span></span>;
+        }
+        attributes<span class="pl-k">.</span>put(<span class="pl-s"><span class="pl-pds">"</span>message<span class="pl-pds">"</span></span>, message);
+        <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-smi">ModelAndView</span>(attributes, <span class="pl-s"><span class="pl-pds">"</span>hello.ftl<span class="pl-pds">"</span></span>);
+    }
+}</pre></div>
+
+<p>Just like <code>@Transformer</code> a template engine can be set at the class level and then ignored at the method level.</p>
+
+<hr>
+
+<p>ExceptionExample.java</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.Controller</span>;
+<span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.ExceptionMapping</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.Request</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.Response</span>;
+
+@<span class="pl-smi">Controller</span>
+<span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">ExceptionExample</span> {
+    <span class="pl-k">@ExceptionMapping</span>(<span class="pl-smi">NotFoundException</span><span class="pl-k">.</span>class)
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">notFound</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        response<span class="pl-k">.</span>status(<span class="pl-c1">404</span>);
+        response<span class="pl-k">.</span>body(<span class="pl-s"><span class="pl-pds">"</span>Resource not found<span class="pl-pds">"</span></span>);
+    }
+
+    <span class="pl-k">@ExceptionMapping</span>(<span class="pl-smi">NullPointerException</span><span class="pl-k">.</span>class)
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">notFound</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        response<span class="pl-k">.</span>status(<span class="pl-c1">404</span>);
+        response<span class="pl-k">.</span>body(<span class="pl-s"><span class="pl-pds">"</span>Oops! Looks like something was broken!<span class="pl-pds">"</span></span>);
+    }
+}</pre></div>
+
+<hr>
+
+<p>FilterExample.java</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">import</span> <span class="pl-smi">com.alta189.auto.spark.SparkFilter</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.Request</span>;
+<span class="pl-k">import</span> <span class="pl-smi">spark.Response</span>;
+
+<span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">FilterExample</span> <span class="pl-k">extends</span> <span class="pl-e">SparkFilter</span> {
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">before</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        <span class="pl-c">// Before the Request is handled</span>
+    }
+
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">after</span>(<span class="pl-smi">Request</span> <span class="pl-v">request</span>, <span class="pl-smi">Response</span> <span class="pl-v">response</span>) {
+        <span class="pl-c">// After the Request is handled</span>
+    }
+}</pre></div>
+
+<p>Adding <code>@FilterMapping("/api/*")</code> to the Class would limit the filter to only paths starting with <code>/api/</code>.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/alta189/Auto-Spark/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/alta189/Auto-Spark/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/alta189/Auto-Spark"></a> is maintained by <a href="https://github.com/alta189">alta189</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
