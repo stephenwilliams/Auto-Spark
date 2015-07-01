@@ -10,7 +10,7 @@
 
     <groupId>com.alta189</groupId>
     <artifactId>auto-spark</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
     <url>http://github.com/alta189/Auto-Spark</url>
 

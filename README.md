@@ -11,14 +11,14 @@ Auto Spark is an alternative way to use [Spark][spark]. This example assumes you
 <dependency>
 	<groupId>com.alta189</groupId>
 	<artifactId>auto-spark</artifactId>
-	<version>1.0</version>
+	<version>1.1</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```gradle
-'com.alta189:auto-spark:1.0'
+'com.alta189:auto-spark:1.1'
 ```
 
 You can also download the jars [here][releases].
