@@ -71,7 +71,6 @@ public class AutoSpark {
 		init();
 		Reflections reflections = new Reflections(getConfigurationBuilder().addUrls(ClasspathHelper.forClassLoader()));
 		run(reflections);
-
 	}
 
 	/**
@@ -148,7 +147,6 @@ public class AutoSpark {
 		Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(Controller.class);
 
 		controllers.forEach(this::registerController);
-
 	}
 
 	private void registerController(Class<?> controllerClass) {

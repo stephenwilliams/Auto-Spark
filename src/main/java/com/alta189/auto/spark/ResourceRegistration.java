@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 class ResourceRegistration extends Registration {
+	private static final String EMPTY_STRING = "";
 	private ResourceMapping resourceMapping;
 	private Transformer transformerMapping;
 	private TemplateEngine templateEngineMapping;
@@ -21,6 +22,7 @@ class ResourceRegistration extends Registration {
 	private spark.TemplateEngine templateEngine = null;
 	private String path;
 	private RegistrationType registrationType;
+	private boolean isVoid;
 
 	public ResourceRegistration(AutoController parent, Method method) {
 		super(parent, method);
@@ -41,7 +43,7 @@ class ResourceRegistration extends Registration {
 		}
 
 		if (getMethod().getReturnType().equals(Void.TYPE)) {
-			throw new RegistrationException(getMethod(), "method return type cannot be void");
+			isVoid = true;
 		}
 
 		Class<?>[] parameters = getMethod().getParameterTypes();
@@ -85,6 +87,12 @@ class ResourceRegistration extends Registration {
 		} else {
 			path = getResourceMapping().value();
 		}
+
+		if (transformer != null && isVoid) {
+			throw new RegistrationException(getMethod(), "method return type cannot be void");
+		} else if (templateEngine != null && isVoid) {
+			throw new RegistrationException(getMethod(), "method return type cannot be void");
+		}
 	}
 
 	@Override
@@ -104,7 +112,12 @@ class ResourceRegistration extends Registration {
 				@Override
 				public Object handle(Request request, Response response) throws Exception {
 					try {
-						return getMethod().invoke(getParent().getControllerInstance(), request, response);
+						if (isVoid) {
+							getMethod().invoke(getParent().getControllerInstance(), request, response);
+							return EMPTY_STRING;
+						} else {
+							return getMethod().invoke(getParent().getControllerInstance(), request, response);
+						}
 					} catch (IllegalAccessException | InvocationTargetException e) {
 						if (e.getCause() != null) {
 							Exception ex = AutoSparkUtils.safeCast(e.getCause(), Exception.class);
