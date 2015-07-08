@@ -16,5 +16,5 @@ public @interface FilterMapping {
 	 *
 	 * @return path
 	 */
-	String value();
+	String[] value();
 }

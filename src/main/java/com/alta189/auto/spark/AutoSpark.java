@@ -175,16 +175,26 @@ public class AutoSpark {
 			logger.error(filterClass.getName() + " had trouble getting an instance of the filter");
 			return;
 		}
-
-		StringBuilder builder = new StringBuilder("[FILTER MAPPING] ").append(AutoSparkUtils.getSimpleClassName(filterClass));
-		if (filterMapping == null || filterMapping.value() == null || StringUtils.isEmpty(filterMapping.value().trim())) {
-			Spark.before(filter::before);
-			Spark.after(filter::after);
+		if (filterMapping == null || filterMapping.value() == null || StringUtils.isEmpty(filterMapping.value().length == 0)) {
+			registerFilter(filter);
 		} else {
-			Spark.before(filterMapping.value(), filter::before);
-			Spark.after(filterMapping.value(), filter::after);
-			builder.append("path: ").append(filterMapping.value());
+			for (String path : filterMapping.value()) {
+				registerFilter(path, filter);
+			}
 		}
+	}
+
+	private void registerFilter(SparkFilter filter) {
+		Spark.before(filter::before);
+		Spark.after(filter::after);
+		registeredFilters.add("[FILTER MAPPING] " + AutoSparkUtils.getSimpleClassName(filter.getClass()));
+	}
+
+	private void registerFilter(String path, SparkFilter filter) {
+		StringBuilder builder = new StringBuilder("[FILTER MAPPING] ").append(AutoSparkUtils.getSimpleClassName(filter.getClass()));
+			Spark.before(path, filter::before);
+			Spark.after(path, filter::after);
+			builder.append("path: ").append(path);
 		registeredFilters.add(builder.toString());
 	}
 
