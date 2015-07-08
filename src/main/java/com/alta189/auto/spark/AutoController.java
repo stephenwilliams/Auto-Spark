@@ -33,6 +33,9 @@ class AutoController {
 		}
 
 		resourceMapping = getControllerClass().getAnnotation(ResourceMapping.class);
+		if (resourceMapping != null && resourceMapping.value() != null && resourceMapping.value().length > 1) {
+			throw new RegistrationException(getControllerClass(), "Can only have one path in parent resource mapping");
+		}
 		transformerMapping = getControllerClass().getAnnotation(Transformer.class);
 		templateEngineMapping = getControllerClass().getAnnotation(TemplateEngine.class);
 

@@ -6,12 +6,13 @@ import spark.Request;
 import spark.Response;
 import spark.ResponseTransformerRouteImpl;
 import spark.RouteImpl;
-import spark.TemplateViewRoute;
 import spark.TemplateViewRouteImpl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 class ResourceRegistration extends Registration {
 	private static final String EMPTY_STRING = "";
@@ -20,7 +21,7 @@ class ResourceRegistration extends Registration {
 	private TemplateEngine templateEngineMapping;
 	private SparkResponseTransformer transformer = null;
 	private spark.TemplateEngine templateEngine = null;
-	private String path;
+	private List<String> paths = new ArrayList<>();
 	private RegistrationType registrationType;
 	private boolean isVoid;
 
@@ -82,10 +83,14 @@ class ResourceRegistration extends Registration {
 			}
 		}
 
-		if (getParent().getResourceMapping() != null && StringUtil.isNotBlank(getParent().getResourceMapping().value())) {
-			path = getParent().getResourceMapping().value() + getResourceMapping().value();
+		if (getParent().getResourceMapping() != null && getParent().getResourceMapping().value().length == 1 && StringUtil.isNotBlank(getParent().getResourceMapping().value()[0])) {
+			for (String path : getResourceMapping().value()) {
+				paths.add(getParent().getResourceMapping().value()[0] + path);
+			}
 		} else {
-			path = getResourceMapping().value();
+			for (String path : getResourceMapping().value()) {
+				paths.add(path);
+			}
 		}
 
 		if (transformer != null && isVoid) {
@@ -98,17 +103,26 @@ class ResourceRegistration extends Registration {
 	@Override
 	public void register() throws RegistrationException {
 		if (transformer != null) {
-			transformerRegister();
+			for (String path : getPaths()) {
+				transformerRegister(path);
+			}
+			registrationType = RegistrationType.TRANSFORMER;
 		} else if (templateEngine != null) {
-			templateEngineRegister();
+			for (String path : getPaths()) {
+				templateEngineRegister(path);
+			}
+			registrationType = RegistrationType.TEMPLATE_ENGINE;
 		} else {
-			plainRegister();
+			for (String path : getPaths()) {
+				plainRegister(path);
+			}
+			registrationType = RegistrationType.PLAIN;
 		}
 	}
 
-	private void plainRegister() throws RegistrationException {
+	private void plainRegister(String path) throws RegistrationException {
 		try {
-			getParent().getAutoSpark().getAddRoute().invoke(null, getResourceMapping().method().name().toLowerCase(), new RouteImpl(getPath(), getResourceMapping().accepts()) {
+			getParent().getAutoSpark().getAddRoute().invoke(null, getResourceMapping().method().name().toLowerCase(), new RouteImpl(path, getResourceMapping().accepts()) {
 				@Override
 				public Object handle(Request request, Response response) throws Exception {
 					try {
@@ -137,12 +151,12 @@ class ResourceRegistration extends Registration {
 		registrationType = RegistrationType.PLAIN;
 	}
 
-	private void transformerRegister() throws RegistrationException {
+	private void transformerRegister(String path) throws RegistrationException {
 		try {
 			getParent().getAutoSpark().getAddRoute().invoke(null, getResourceMapping().method().name().toLowerCase(), ResponseTransformerRouteImpl.create(
-					getPath(),
+					path,
 					getResourceMapping().accepts(),
-					new RouteImpl(getPath(), getResourceMapping().accepts()) {
+					new RouteImpl(path, getResourceMapping().accepts()) {
 						@Override
 						public Object handle(Request request, Response response) throws Exception {
 							try {
@@ -168,10 +182,10 @@ class ResourceRegistration extends Registration {
 		registrationType = RegistrationType.TRANSFORMER;
 	}
 
-	private void templateEngineRegister() throws RegistrationException {
+	private void templateEngineRegister(String path) throws RegistrationException {
 		try {
 			getParent().getAutoSpark().getAddRoute().invoke(null, getResourceMapping().method().name().toLowerCase(), TemplateViewRouteImpl.create(
-					getPath(),
+					path,
 					getResourceMapping().accepts(),
 					(request, response) -> {
 						try {
@@ -194,12 +208,16 @@ class ResourceRegistration extends Registration {
 
 	@Override
 	public void print() {
+		getPaths().forEach(this::print);
+	}
+
+	public void print(String path) {
 		StringBuilder builder = new StringBuilder("[RESOURCE MAPPING] ")
 				.append(AutoSparkUtils.getFullMethodName(getMethod()))
 				.append(" ")
 				.append(getResourceMapping().method().name())
 				.append(" ")
-				.append(getPath())
+				.append(path)
 				.append(" accepts: ")
 				.append(getResourceMapping().accepts())
 				.append(" ");
@@ -239,8 +257,8 @@ class ResourceRegistration extends Registration {
 		return templateEngine;
 	}
 
-	public String getPath() {
-		return path;
+	public List<String> getPaths() {
+		return paths;
 	}
 
 	private enum RegistrationType {

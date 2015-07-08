@@ -24,7 +24,7 @@ public @interface ResourceMapping {
 	 *
 	 * @return path
 	 */
-	String value();
+	String[] value();
 
 	/**
 	 * Method for the Route.
