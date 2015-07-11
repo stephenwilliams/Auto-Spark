@@ -11,7 +11,7 @@ import java.util.Set;
 import static org.reflections.ReflectionUtils.getAllMethods;
 import static org.reflections.ReflectionUtils.withAnnotation;
 
-class AutoController {
+public class AutoController {
 	private static final Logger logger = LoggerFactory.getLogger(AutoController.class);
 	private final List<Registration> registrations = new ArrayList<>();
 	private final AutoSpark autoSpark;

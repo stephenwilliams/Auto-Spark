@@ -2,7 +2,7 @@ package com.alta189.auto.spark;
 
 import java.lang.reflect.Method;
 
-abstract class Registration {
+public abstract class Registration {
 	private final AutoController parent;
 	private final Method method;
 

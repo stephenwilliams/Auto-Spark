@@ -8,7 +8,7 @@ import spark.Spark;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-class ExceptionRegistration extends Registration {
+public class ExceptionRegistration extends Registration {
 	private ExceptionMapping exceptionMapping;
 
 	public ExceptionRegistration(AutoController parent, Method method) {

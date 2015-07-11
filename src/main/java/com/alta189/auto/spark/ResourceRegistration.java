@@ -14,7 +14,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-class ResourceRegistration extends Registration {
+public class ResourceRegistration extends Registration {
 	private static final String EMPTY_STRING = "";
 	private ResourceMapping resourceMapping;
 	private Transformer transformerMapping;
