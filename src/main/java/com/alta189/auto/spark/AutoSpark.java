@@ -95,6 +95,7 @@ public class AutoSpark {
 		registerControllers(reflections);
 		registerFilters(reflections);
 		registerWrappedRuntimeExceptionCatch();
+		Spark.awaitInitialization();
 		printRegistrations();
 	}
 
