@@ -38,6 +38,8 @@ public class AutoSpark {
 	private final List<AutoController> registeredControllers = new ArrayList<>();
 	private final List<String> registeredFilters = new ArrayList<>();
 	protected Method addRoute;
+	private boolean alreadyRun = false;
+	private Reflections reflections;
 
 	public AutoSpark() {
 		excludedPackages.add("java");
@@ -90,13 +92,18 @@ public class AutoSpark {
 	 * @param reflections see {@link Reflections}
 	 */
 	public void run(Reflections reflections) {
+		if (alreadyRun) {
+			throw new IllegalStateException("AutoSpark has already run!");
+		}
+		this.reflections = reflections;
 		addRoute = getAllMethods(Spark.class, withModifier(Modifier.PROTECTED), withName("addRoute")).iterator().next();
 		addRoute.setAccessible(true);
-		registerControllers(reflections);
-		registerFilters(reflections);
+		registerControllers();
+		registerFilters();
 		registerWrappedRuntimeExceptionCatch();
 		Spark.awaitInitialization();
 		printRegistrations();
+		alreadyRun = true;
 	}
 
 	/**
@@ -144,7 +151,7 @@ public class AutoSpark {
 		return configurationBuilder;
 	}
 
-	private void registerControllers(Reflections reflections) {
+	private void registerControllers () {
 		Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(Controller.class);
 
 		controllers.forEach(this::registerController);
@@ -162,7 +169,7 @@ public class AutoSpark {
 		}
 	}
 
-	private void registerFilters(Reflections reflections) {
+	private void registerFilters() {
 		Set<Class<? extends SparkFilter>> filters = reflections.getSubTypesOf(SparkFilter.class);
 
 		filters.forEach(this::registerFilter);
@@ -231,5 +238,13 @@ public class AutoSpark {
 
 	public static Logger getLogger() {
 		return logger;
+	}
+
+	public List<AutoController> getRegisteredControllers() {
+		return registeredControllers;
+	}
+
+	public Reflections getReflections() {
+		return reflections;
 	}
 }
