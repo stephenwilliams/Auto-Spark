@@ -111,6 +111,8 @@
     </dependencies>
 
     <build>
+        <finalName>auto-spark.jar</finalName>
+
         <resources>
             <resource>
                 <directory>${basedir}</directory>
