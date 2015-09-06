@@ -111,7 +111,7 @@
     </dependencies>
 
     <build>
-        <finalName>auto-spark.jar</finalName>
+        <finalName>auto-spark</finalName>
 
         <resources>
             <resource>
